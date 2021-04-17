@@ -102,7 +102,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Apostolos Konstantinou - 
 
-Stavros Moutsis - 
+Stavros Moutsis - stavros.moutsis@gmail.com 
 
 Konstantinos Chervatidis - kostasxerv@gmail.com
 
