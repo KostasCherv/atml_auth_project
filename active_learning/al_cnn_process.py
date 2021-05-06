@@ -18,10 +18,10 @@ from utils import get_initial_indexes
 from tensorflow.keras.utils import to_categorical
 
 class AL_CNN_Process:
-  def __init__(self, queries=10, instances_per_q=10, experiments=3):
+  def __init__(self, queries=10, instances=10, experiments=3):
     self.init_data()
     self.queries = queries
-    self.instances = instances_per_q
+    self.instances = instances
     self.experiments = experiments
 
   def train(self, strategy):
@@ -101,7 +101,6 @@ class AL_CNN_Process:
 
     X_train = X_train.reshape((len(X_train), self.IMG_WIDTH, self.IMG_HEIGHT, self.CHANNELS))
     X_test = X_test.reshape((len(X_test), self.IMG_WIDTH, self.IMG_HEIGHT, self.CHANNELS))
-
 
     #normalizing 
     X_train = X_train.astype('float32') 

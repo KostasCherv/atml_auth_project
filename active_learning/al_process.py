@@ -10,10 +10,10 @@ from modAL.models import ActiveLearner
 from utils import get_initial_indexes
 
 class AL_Process:
-  def __init__(self, queries=10, instances_per_q=10, experiments=3):
+  def __init__(self, queries=10, instances=10, experiments=3):
     self.init_data()
     self.queries = queries
-    self.instances = instances_per_q
+    self.instances = instances
     self.experiments = experiments
 
   def train(self, model):
