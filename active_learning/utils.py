@@ -3,12 +3,11 @@ import matplotlib as mpl
 import numpy as np
 
 
-def plot_scores(hists, labels):
+def plot_scores(hists, labels, title='scores'):
   fig, ax = plt.subplots(figsize=(10, 6), dpi=130)
 
   for i, h in enumerate(hists):
     ax.plot(h, label=labels[i])
-    print(h, labels[i])
     ax.scatter(range(len(h)), h, s=13, )
 
   ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(nbins=5, integer=True))
@@ -23,7 +22,7 @@ def plot_scores(hists, labels):
   ax.set_xlabel('Query iteration')
   ax.set_ylabel('Classification Accuracy')
 
-  plt.show()
+  plt.savefig(title)
 
       
 def get_initial_indexes(y, n_items=50):
