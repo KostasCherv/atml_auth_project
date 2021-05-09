@@ -1,20 +1,22 @@
 
 import numpy as np
-import tensorflow as tf
 from tqdm import tqdm
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.decomposition import PCA
-from modAL.models import ActiveLearner
+from modAL.models import ActiveLearner, Committee
 from utils import get_initial_indexes
+from dataset import Dataset
 
 class AL_Process:
-  def __init__(self, queries=10, instances=10, experiments=3):
-    self.init_data()
+  def __init__(self, queries=10, instances=10, experiments=3, classes = 'all', dataset=Dataset['CIFAR10']):
     self.queries = queries
     self.instances = instances
     self.experiments = experiments
+    self.classes = classes
+    self.dataset=dataset
+    self.load_data()
 
   def train(self, model):
     performance_history = []
@@ -46,7 +48,6 @@ class AL_Process:
 
     return self.train(model)
 
-
   def train_committee(self, strategy):
     learner_1 = ActiveLearner(
       estimator=RandomForestClassifier(),
@@ -64,18 +65,16 @@ class AL_Process:
 
     return self.train(model)
 
-  def init_data(self):
-    # IMG_WIDTH = 28
-    # IMG_HEIGHT = 28
-    # CHANNELS=1
-    # (X_train, y_train), (X_test, y_test) = tf.keras.datasets.mnist.load_data()
+  def load_data(self):
+    (X_train, y_train), (X_test, y_test) = self.dataset.load_data()
+    keep = int(len(X_train) *0.1)
+    X_train = X_train[:keep]
+    y_train = y_train[:keep]
+    self.IMG_WIDTH = X_train.shape[1]
+    self.IMG_HEIGHT = X_train.shape[2]
+    self.CHANNELS = 1 if len(X_train.shape) == 3 else X_train.shape[3]
+    selected_classes = np.unique(y_train) if self.classes == 'all' else self.classes
 
-    IMG_WIDTH = 32
-    IMG_HEIGHT = 32
-    CHANNELS=3
-    (X_train, y_train), (X_test, y_test) = tf.keras.datasets.cifar10.load_data()
-
-    selected_classes = np.unique(y_train)
     filtered_train_indexes = [i for i, v in enumerate(y_train.reshape(len(y_train))) if v in selected_classes]
     filtered_test_indexes = [i for i, v in enumerate(y_test.reshape(len(y_test))) if v in selected_classes]
 
@@ -85,8 +84,8 @@ class AL_Process:
     X_test = X_test[filtered_test_indexes]
     y_test = y_test[filtered_test_indexes]
 
-    X_train = X_train.reshape((len(X_train), IMG_WIDTH * IMG_HEIGHT * CHANNELS))
-    X_test = X_test.reshape((len(X_test), IMG_WIDTH * IMG_HEIGHT * CHANNELS))
+    X_train = X_train.reshape((len(X_train), self.IMG_WIDTH * self.IMG_HEIGHT * self.CHANNELS))
+    X_test = X_test.reshape((len(X_test), self.IMG_WIDTH * self.IMG_HEIGHT * self.CHANNELS))
 
     y_test = y_test.reshape((len(y_test)))
     y_train = y_train.reshape((len(y_train)))
@@ -101,7 +100,8 @@ class AL_Process:
     X_train = X_train / 255.0 
     X_test = X_test / 255.0
 
-    n_initial= 5 * self.N_CLASSES
+    n_initial= int(keep * 0.1)
+    print(F'NUMBER OF INITIAL SAMPLES: {n_initial}')
     initial_idx = get_initial_indexes(y_train, n_initial)
     self.X_initial = X_train[initial_idx]
     self.y_initial = y_train[initial_idx]

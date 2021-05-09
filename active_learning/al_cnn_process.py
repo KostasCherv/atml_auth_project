@@ -11,21 +11,22 @@ import keras
 import numpy as np
 import tensorflow as tf
 from tqdm import tqdm
-from sklearn.neural_network import MLPClassifier
-from sklearn.decomposition import PCA
 from modAL.models import ActiveLearner
 from utils import get_initial_indexes
 from tensorflow.keras.utils import to_categorical
+from dataset import Dataset
 
 class AL_CNN_Process:
-  def __init__(self, queries=10, instances=10, experiments=3):
-    self.init_data()
+  def __init__(self, queries=10, instances=10, experiments=3, classes='all', dataset=Dataset['CIFAR10']):
     self.queries = queries
     self.instances = instances
     self.experiments = experiments
+    self.classes = classes
+    self.dataset = dataset
+
+    self.init_data()
 
   def train(self, strategy):
-    print(self.X_initial.shape, self.y_initial.shape)
 
     model = ActiveLearner(
       estimator = KerasClassifier(self.get_model),
@@ -81,14 +82,11 @@ class AL_CNN_Process:
     return model
 
   def init_data(self):
-    self.IMG_WIDTH = 32
-    self.IMG_HEIGHT = 32
-    self.CHANNELS = 3
-    
-    (X_train, y_train), (X_test, y_test) = tf.keras.datasets.cifar10.load_data()
-
-    # selected_classes = np.unique(y_train)
-    selected_classes = [0,1,2]
+    (X_train, y_train), (X_test, y_test) = self.dataset.load_data()
+    self.IMG_WIDTH = X_train.shape[1]
+    self.IMG_HEIGHT = X_train.shape[2]
+    self.CHANNELS = 1 if len(X_train.shape) == 3 else X_train.shape[3]
+    selected_classes = np.unique(y_train) if self.classes == 'all' else self.classes
 
     filtered_train_indexes = [i for i, v in enumerate(y_train.reshape(len(y_train))) if v in selected_classes]
     filtered_test_indexes = [i for i, v in enumerate(y_test.reshape(len(y_test))) if v in selected_classes]
@@ -111,7 +109,6 @@ class AL_CNN_Process:
     n_initial = 5 * self.N_CLASSES
     initial_idx = get_initial_indexes(y_train, n_initial)
     
-    print(np.unique(y_train))
     y_train = to_categorical(y_train, self.N_CLASSES)
     y_test = to_categorical(y_test, self.N_CLASSES)
 
