@@ -1,3 +1,7 @@
+import keras
+import numpy as np
+import tensorflow as tf
+from tqdm import tqdm
 from keras.layers import Conv2D
 from keras.layers import MaxPooling2D
 from keras.layers import Dense
@@ -7,36 +11,32 @@ from keras.layers import Dropout
 from keras.layers import BatchNormalization
 from keras.models import Sequential
 from keras.wrappers.scikit_learn import KerasClassifier
-import keras
-import numpy as np
-import tensorflow as tf
-from tqdm import tqdm
 from modAL.models import ActiveLearner
 from utils import get_initial_indexes
 from tensorflow.keras.utils import to_categorical
 from dataset import Dataset
 
 class AL_CNN_Process:
-  def __init__(self, queries=10, instances=10, experiments=3, classes='all', dataset=Dataset['CIFAR10']):
-    self.queries = queries
-    self.instances = instances
-    self.experiments = experiments
-    self.classes = classes
-    self.dataset = dataset
+  def __init__(self, queries=10, instances=10, experiments=3, n_initial=100, classes='all', dataset=Dataset['CIFAR10']):
+    self.queries=queries
+    self.instances=instances
+    self.experiments=experiments
+    self.classes=classes
+    self.dataset=dataset
+    self.n_initial=n_initial
 
-    self.init_data()
+    self.load_data()
 
   def train(self, strategy):
-
-    model = ActiveLearner(
-      estimator = KerasClassifier(self.get_model),
-      X_training = self.X_initial.copy(), y_training = self.y_initial.copy(),
-      query_strategy = strategy,
-    )
-    
     performance_history = []
 
     for i in tqdm(range(self.experiments)):
+      model = ActiveLearner(
+        estimator = KerasClassifier(self.get_model),
+        X_training = self.X_initial.copy(), y_training = self.y_initial.copy(),
+        query_strategy = strategy,
+      )
+
       h=[]
       X = self.X_pool.copy()
       y = self.y_pool.copy()
@@ -75,13 +75,13 @@ class AL_CNN_Process:
     model.add(Dense(128, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(self.N_CLASSES, activation='softmax'))
-    # compile model
 
     opt = Adam()
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+    
     return model
 
-  def init_data(self):
+  def load_data(self):
     (X_train, y_train), (X_test, y_test) = self.dataset.load_data()
     self.IMG_WIDTH = X_train.shape[1]
     self.IMG_HEIGHT = X_train.shape[2]
@@ -106,7 +106,7 @@ class AL_CNN_Process:
     X_train = X_train / 255.0 
     X_test = X_test / 255.0
 
-    n_initial = 5 * self.N_CLASSES
+    n_initial = self.n_initial
     initial_idx = get_initial_indexes(y_train, n_initial)
     
     y_train = to_categorical(y_train, self.N_CLASSES)
