@@ -6,15 +6,21 @@ import numpy as np
 def plot_scores(hists, labels, title='scores'):
   fig, ax = plt.subplots(figsize=(10, 6), dpi=130)
 
+  bot, top = 1, 0
   for i, h in enumerate(hists):
     ax.plot(h, label=labels[i])
     ax.scatter(range(len(h)), h, s=13, )
+    if np.max(h) > top:
+      top = 1.05 * np.max(h)
+
+    if np.min(h) < bot:
+      bot = 0.95 * np.min(h)
 
   ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(nbins=5, integer=True))
   ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(nbins=10))
   ax.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(xmax=1))
 
-  ax.set_ylim(bottom=0, top=1)
+  ax.set_ylim(bottom=bot, top=top)
   ax.grid(True)
   ax.legend()
 

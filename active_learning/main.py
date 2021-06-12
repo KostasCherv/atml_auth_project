@@ -9,7 +9,7 @@ from dataset import Dataset
 
 
 def train_process(queries,instances,experiments,initial,ds, classes):
-    chart_name = '_'.join([str(queries), str(instances), str(experiments), str(initial), ds, str(classes)])
+    chart_name = '_'.join(['ADA', str(queries), str(instances), str(experiments), str(initial), ds, str(classes)])
     process = AL_Process(queries=queries, instances=instances, experiments=experiments, n_initial=initial,  dataset=Dataset[ds], classes=classes)
 
     _, ran = process.train_adaBoost(random_sampling)
@@ -27,7 +27,7 @@ def train_process(queries,instances,experiments,initial,ds, classes):
 
 
 def cnn_train_process(queries,instances,experiments,initial,ds,classes):
-    chart_name = '_'.join([str(queries), str(instances), str(experiments), str(initial), ds, str(classes)])
+    chart_name = '_'.join(['CNN', str(queries), str(instances), str(experiments), str(initial), ds, str(classes)])
     process = AL_CNN_Process(queries=queries, instances=instances, experiments=experiments, n_initial=initial,  dataset=Dataset[ds], classes=classes)
 
     _, ran = process.train(random_sampling)
@@ -42,9 +42,17 @@ def cnn_train_process(queries,instances,experiments,initial,ds,classes):
 
 
 def main(): 
-    train_process(queries=50, instances=20, experiments=5, initial=100, ds='FASHION_MNIST', classes=[1,2,3])
-    train_process(queries=50, instances=50, experiments=5, initial=100, ds='FASHION_MNIST', classes='all')
-    # train_process(queries=50, instances=20, experiments=5, initial=500, ds='CIFAR10', classes=[1,2,3])
+    # train_process(queries=50, instances=20, experiments=5, initial=100, ds='FASHION_MNIST', classes=[1,2,3])
+    # train_process(queries=50, instances=20, experiments=5, initial=500, ds='FASHION_MNIST', classes=[1,2,3])
+
+    # train_process(queries=50, instances=50, experiments=5, initial=100, ds='FASHION_MNIST', classes='all')
+    # train_process(queries=50, instances=50, experiments=5, initial=500, ds='FASHION_MNIST', classes='all')
+
+    # train_process(queries=50, instances=20, experiments=5, initial=100, ds='MNIST', classes=[1,2,3])
+    # train_process(queries=50, instances=20, experiments=5, initial=500, ds='MNIST', classes=[1,2,3])
+
+    # train_process(queries=50, instances=50, experiments=5, initial=100, ds='MNIST', classes='all')
+    # train_process(queries=50, instances=50, experiments=5, initial=500, ds='MNIST', classes='all')
 
     # train_process(queries=50, instances=20, experiments=5, initial=100, ds='CIFAR10', classes=[1,2,3])
     # train_process(queries=50, instances=20, experiments=5, initial=500, ds='CIFAR10', classes=[1,2,3])
@@ -55,11 +63,20 @@ def main():
     # cnn_train_process(queries=50, instances=20, experiments=5, initial=100, ds='CIFAR10', classes=[0,1,2])
     # cnn_train_process(queries=50, instances=20, experiments=5, initial=500, ds='CIFAR10', classes=[0,1,2])
 
-    # train_process(queries=50, instances=50, experiments=5, initial=100, ds='CIFAR10', classes='all')
-    # train_process(queries=50, instances=50, experiments=5, initial=500, ds='CIFAR10', classes='all')
+    # cnn_train_process(queries=50, instances=50, experiments=5, initial=100, ds='CIFAR10', classes='all')
+    # cnn_train_process(queries=50, instances=50, experiments=5, initial=500, ds='CIFAR10', classes='all')
 
+    cnn_train_process(queries=50, instances=20, experiments=5, initial=100, ds='FASHION_MNIST', classes=[0,1,2])
+    cnn_train_process(queries=50, instances=20, experiments=5, initial=500, ds='FASHION_MNIST', classes=[0,1,2])
 
+    # cnn_train_process(queries=50, instances=50, experiments=5, initial=100, ds='FASHION_MNIST', classes='all')
+    # cnn_train_process(queries=50, instances=50, experiments=5, initial=500, ds='FASHION_MNIST', classes='all')
 
+    # cnn_train_process(queries=50, instances=20, experiments=5, initial=100, ds='MNIST', classes=[0,1,2])
+    # cnn_train_process(queries=50, instances=20, experiments=5, initial=500, ds='MNIST', classes=[0,1,2])
+
+    # cnn_train_process(queries=50, instances=50, experiments=5, initial=100, ds='MNIST', classes='all')
+    # cnn_train_process(queries=50, instances=50, experiments=5, initial=500, ds='MNIST', classes='all')
 
 if __name__ == '__main__':
     main()
