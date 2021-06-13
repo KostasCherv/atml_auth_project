@@ -1,0 +1,5 @@
+numpy==1.18.5 
+scipy==1.5.2
+scikit-learn==0.24.0
+cvxopt==1.2.6
+opencv-python==4.4.0.42
