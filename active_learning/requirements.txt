@@ -1,0 +1,7 @@
+matplotlib
+modAL
+sklearn
+tqdm
+tensorflow
+keras
+numpy
